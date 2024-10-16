@@ -42,7 +42,7 @@ module main(
 
                         solution = p1 * buf2 + p4 * buf1 + p2;
                 end else begin
-                        solution = firs_num * second_num;
+                        solution = first_num * second_num;
                 end
         end
 endmodule
