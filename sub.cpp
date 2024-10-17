@@ -91,7 +91,7 @@ void solution::createFiles(std::string main_file_name, std::string test_file_nam
 void solution::terminalInterface()
 {
 	cout << "Welcome to Verilog file generator" << endl;
-	cout << "Input \"input_file_name.v\" (if you want to use \"main.v\" just press Enter)" << endl;
+	/*cout << "Input \"input_file_name.v\" (if you want to use \"main.v\" just press Enter)" << endl;
 	string answer;
 	getline(cin, answer);
 	if (answer.empty())
@@ -100,7 +100,7 @@ void solution::terminalInterface()
 	string answer2;
 	getline(cin, answer2);
 	if (answer2.empty())
-		answer2 = "test.v";
+		answer2 = "test.v";*/
 	
 	cout << "Input digit numbers (int > 0)" << endl;
 	int inp_digit;
@@ -115,7 +115,7 @@ void solution::terminalInterface()
 	} while (inp_quantity_of_tests < 0);
 	solution::setQuantityOfTests(inp_quantity_of_tests);
 
-	solution::createFiles(answer, answer2);
+	solution::createFiles();
 }
 
 // =============================================================
@@ -269,13 +269,13 @@ void createTest(ofstream &test, long long first_num, long long second_num)
 	test << "\t\t$display(\"solution %d * %d is %d\", first_num, second_num, solution);\n";
 }
 
-int randomNum(int digit)
+long long randomNum(int digit)
 {
-	int min_value = pow(10, digit - 1);
-	int max_value = pow(10, digit) - 1;
+	long long min_value = pow(10, digit - 1);
+	long long max_value = pow(10, digit) - 1;
 	random_device rd;
 	mt19937 gen(rd()); // генератор случайных чисел на основе алгоритма Mersenne Twister
 	uniform_int_distribution<> dist(min_value, max_value); 
 
-	return int(dist(gen));
+	return dist(gen);
 }
