@@ -32,3 +32,4 @@ run_test_simulation: create_simulation
 	$(VVP) sim
 	@echo "Test simulation complete."
 	rm -f sim
+
