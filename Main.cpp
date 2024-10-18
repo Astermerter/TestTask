@@ -7,8 +7,8 @@ using namespace std;
 int main() 
 {
 	solution sol;
-
 	sol.terminalInterface();
+
 
 	return 0;
 }
