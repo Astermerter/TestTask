@@ -34,9 +34,10 @@ int solution::getQuantityOfTest()
 }
 void solution::setDigit(int inp_digit)
 {
-	if (inp_digit == -1)
+	if (inp_digit < 1)
 	{
 		do {
+			cout << "Input digit numbers (int > 0)" << endl;
 			cin >> digit;
 		} while (digit < 0);
 	}
@@ -46,9 +47,10 @@ void solution::setDigit(int inp_digit)
 }
 void solution::setQuantityOfTests(int inp_quantity_of_tests)
 {
-	if (quantity_of_tests == -1)
+	if (quantity_of_tests < 1)
 	{
 		do {
+			cout << "Input quantity of tests  (int > 0)" << endl;
 			cin >> quantity_of_tests;
 		} while (quantity_of_tests < 0);
 	}
@@ -101,16 +103,16 @@ void solution::terminalInterface()
 	getline(cin, answer2);
 	if (answer2.empty())
 		answer2 = "test.v";*/
-	
-	cout << "Input digit numbers (int > 0)" << endl;
 	int inp_digit;
 	do {
+		cout << "Input digit numbers (int > 0)" << endl;
 		cin >> inp_digit;
 	} while (inp_digit < 0);
 	solution::setDigit(inp_digit);
-	cout << "Input quantity of tests  (int > 0)" << endl;
+
 	int inp_quantity_of_tests;
 	do {
+		cout << "Input quantity of tests  (int > 0)" << endl;
 		cin >> inp_quantity_of_tests;
 	} while (inp_quantity_of_tests < 0);
 	solution::setQuantityOfTests(inp_quantity_of_tests);
