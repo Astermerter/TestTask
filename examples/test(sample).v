@@ -10,7 +10,7 @@ module test;
         );
 
         initial begin
-                first_num = 123; // сделать рандомные числа в c++
+                first_num = 123; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ c++
                 second_num = 345;
                 #10;
                 $display("solution %d * %d is %d", first_num, second_num, solution);
