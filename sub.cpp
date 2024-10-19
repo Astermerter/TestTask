@@ -206,10 +206,10 @@ void createTestFileToQOT(int quantity_of_test, int digit, string file_name)
 	ofstream test(file_name);
 	bool random_test = 0;
 	long long first_num, second_num;
-
-	cout << "Input type of tests (1 - random / 0 - manual entry)" << endl;
-	cin >> random_test;
-	
+	do {
+		cout << "Input type of tests (1 - random / 0 - manual entry)" << endl;
+		cin >> random_test;
+	} while (random_test != 1 or random_test != 0);
 	if (test.is_open())
 	{
 		test << "module test;\n";
