@@ -159,9 +159,9 @@ void createMainFileToDigitMoreOne(int digit, string file_name)
 	if (main.is_open())
 	{
 		main << "module main(\n";
-		main << "\tinput [" << (int(log2(pow(10, digit))) + 1) << ":0] first_num, \n"; // ïðîèçâîäèòñÿ ðàñ÷åò ñêîëüêî áèò íåîáõîäèìî äëÿ çàïèñè ëþáîãî ÷èñëà ðàçðÿäíîñòè digit
+		main << "\tinput [" << (int(log2(pow(10, digit))) + 1) << ":0] first_num, \n"; // Ð¿Ñ€Ð¾Ð¸Ð·Ð²Ð¾Ð´Ð¸Ñ‚ÑÑ Ñ€Ð°ÑÑ‡ÐµÑ‚ ÑÐºÐ¾Ð»ÑŒÐºÐ¾ Ð±Ð¸Ñ‚ Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð¾ Ð´Ð»Ñ Ð·Ð°Ð¿Ð¸ÑÐ¸ Ð»ÑŽÐ±Ð¾Ð³Ð¾ Ñ‡Ð¸ÑÐ»Ð° Ñ€Ð°Ð·Ñ€ÑÐ´Ð½Ð¾ÑÑ‚Ð¸ digit
 		main << "\tinput [" << (int(log2(pow(10, digit))) + 1) << ":0] second_num,\n";
-		main << "\toutput reg [" << (int(log2(pow(10, 2 * (digit)))) + 1) << ":0] solution\n"; // àíàëîãè÷íî, íî äëÿ ïðîèçâåäåíèÿ 
+		main << "\toutput reg [" << (int(log2(pow(10, 2 * (digit)))) + 1) << ":0] solution\n"; // Ð°Ð½Ð°Ð»Ð¾Ð³Ð¸Ñ‡Ð½Ð¾, Ð½Ð¾ Ð´Ð»Ñ Ð¿Ñ€Ð¾Ð¸Ð·Ð²ÐµÐ´ÐµÐ½Ð¸Ñ 
 		main << ");\n";
 		main << "\tfunction [" << (int(log2(pow(10, 2 * (digit)))) + 1) << ":0] karatsuba;\n";
 		main << "\t\tinput [" << (int(log2(pow(10, digit))) + 1) << ":0] num1;\n";
@@ -396,7 +396,7 @@ void createTestFileToQOT(int quantity_of_test, int digit, string file_name)
 	}
 }
 
-void createTest(ofstream& test, int digit) // ïåðåãðóæàþ ôóíêöèþ ÷òîáû áûëî óäîáíåå ïèñàòü
+void createTest(ofstream& test, int digit) // Ð¿ÐµÑ€ÐµÐ³Ñ€ÑƒÐ¶Ð°ÑŽ Ñ„ÑƒÐ½ÐºÑ†Ð¸ÑŽ Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð±Ñ‹Ð»Ð¾ ÑƒÐ´Ð¾Ð±Ð½ÐµÐµ Ð¿Ð¸ÑÐ°Ñ‚ÑŒ
 {
 	int buf = randomNum(digit);
 	test << "\t\tfirst_num = " << buf << ";\n";
@@ -418,7 +418,7 @@ long long randomNum(int digit)
 	long long min_value = pow(10, digit - 1);
 	long long max_value = pow(10, digit) - 1;
 	random_device rd;
-	mt19937 gen(rd()); // ãåíåðàòîð ñëó÷àéíûõ ÷èñåë íà îñíîâå àëãîðèòìà Mersenne Twister
+	mt19937 gen(rd()); // Ð³ÐµÐ½ÐµÑ€Ð°Ñ‚Ð¾Ñ€ ÑÐ»ÑƒÑ‡Ð°Ð¹Ð½Ñ‹Ñ… Ñ‡Ð¸ÑÐµÐ» Ð½Ð° Ð¾ÑÐ½Ð¾Ð²Ðµ Ð°Ð»Ð³Ð¾Ñ€Ð¸Ñ‚Ð¼Ð° Mersenne Twister
 	uniform_int_distribution<> dist(min_value, max_value); 
 
 	return dist(gen);
