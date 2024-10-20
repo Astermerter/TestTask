@@ -33,5 +33,7 @@ void createTestFileToQOT(int quantity_of_test, int digit, std::string file_name 
 void createTest(std::ofstream& test, int digit); // создает один тест со случайными числами размерности digit для файла тестирования test
 void createTest(std::ofstream& test, long long first_num, long long second_num);// создает один тест с задаваемыми через консоль числами размерности digit для файла тестирования test
 long long randomNum(int digit); // возвращает случайное число размерности digit
+void createIteration(ofstream& main, int count, int digit);
+int maxIteration(int digit);
 
 #endif // !sub

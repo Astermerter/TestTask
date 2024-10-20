@@ -1,48 +1,249 @@
 module main(
-        input [15:0] first_num, // тут с++ меняет значения
-        input [15:0] second_num, // тут тоже
-        output reg [31:0] solution // и тут
+        input [15:0] first_num, 
+        input [15:0] second_num, 
+        output reg [31:0] solution 
 );
-        reg [3:0] n = 1; // тут вообще все надо правильно указать
-        reg [3:0] m;
-        reg [15:0] F_F_P; // первая часть первого числа
-        reg [15:0] F_S_P; // вторая часть первого числа
-        reg [15:0] S_F_P; // аналогично второе число
-        reg [15:0] S_S_P;
+    function [63:0] karatsuba;
+        input [63:0] num1; 
+        input [63:0] num2;
+        reg [63:0] temp_num1;
+        reg [63:0] f1, f2, s1, s2; 
+        reg [63:0] p1, p2, p3, p4; 
+        reg [63:0] buf1, buf2, i, m, digit_count;
 
-        reg [15:0] p1;
-        reg [15:0] p2;
-        reg [15:0] p3;
-        reg [15:0] p4;
-
-        integer buf1; // (10^m) buf зарезервированно как системная переменная
-        integer buf2; // (10^2m)
-        integer i;
-        always @(*) begin
-                if (n > 1) begin
-                        m = n >> 1;
-                        solution = 0;
-                        buf1 = 10;
-                        buf2 = 10;
-                        for (i = 0; i < m - 1; i++) begin
-                                buf1 = buf1 * 10;
-                        end
-                        for (i = 0; i < 2 * m - 1; i++) begin
-                                buf2 = buf2 * 10;
-                        end
-                        F_F_P = first_num / buf1;
-                        F_S_P = first_num % buf1;
-                        S_F_P = second_num / buf1;
-                        S_S_P = second_num % buf1;
-
-                        p1 = F_F_P * S_F_P;
-                        p2 = F_S_P * S_S_P;
-                        p3 = (F_F_P + F_S_P)*(S_F_P + S_S_P);
-                        p4 = p3 - p2 - p1;
-
-                        solution = p1 * buf2 + p4 * buf1 + p2;
-                end else begin
-                        solution = first_num * second_num;
+        begin
+            digit_count = 0;
+            temp_num1 = num1; 
+            while (temp_num1 > 0) begin
+                temp_num1 = temp_num1 / 10; 
+                digit_count = digit_count + 1;
+            end
+            
+            
+            m = (digit_count) >> 1;
+            
+            if (digit_count > 1) begin
+                buf1 = 10;
+                buf2 = 10;
+                for (i = 0; i < m-1; i++) begin
+                    buf1 = (buf1 << 3) + (buf1 << 1); 
                 end
+                for (i = 0; i < (m << 1) - 1; i++) begin
+                    buf2 = (buf2 << 3) + (buf2 << 1);
+                end
+
+                
+                f1 = num1 / buf1; 
+                f2 = num1 % buf1; 
+                s1 = num2 / buf1; 
+                s2 = num2 % buf1; 
+
+
+                p1 = pf1(f1, s1);  
+                p2 = pf1(f2, s2);  
+                p3 = pf1(f1 + f2, s1 + s2); 
+                p4 = p3 - p2 - p1;
+
+                for (i = 0; i < m; i++) begin
+                    p4 = (p4 << 3) + (p4 << 1); 
+                end
+                for (i = 0; i < (m << 1); i++) begin
+                    p1 = (p1 << 3) + (p1 << 1);
+                end
+
+                karatsuba = p1 + p4 + p2;
+
+            end else begin
+                karatsuba = 0;
+                for (i = 0; i < num2; i++) begin
+                    karatsuba += num1;
+                end
+            end
+        end
+    endfunction
+    function [63:0] pf1;
+        input [63:0] num1; 
+        input [63:0] num2;
+        reg [63:0] temp_num1;
+        reg [63:0] f1, f2, s1, s2; 
+        reg [63:0] p1, p2, p3, p4; 
+        reg [63:0] buf1, buf2, i, m, digit_count;
+
+        begin
+            
+            digit_count = 0;
+            temp_num1 = num1; 
+            while (temp_num1 > 0) begin
+                temp_num1 = temp_num1 / 10; 
+                digit_count = digit_count + 1;
+            end
+            
+            
+            m = (digit_count) >> 1;
+            
+            if (digit_count > 1) begin
+                buf1 = 10;
+                buf2 = 10;
+                for (i = 0; i < m-1; i++) begin
+                    buf1 = (buf1 << 3) + (buf1 << 1); 
+                end
+                for (i = 0; i < (m << 1) - 1; i++) begin
+                    buf2 = (buf2 << 3) + (buf2 << 1);
+                end
+
+                
+                f1 = num1 / buf1; 
+                f2 = num1 % buf1; 
+                s1 = num2 / buf1; 
+                s2 = num2 % buf1; 
+
+                p1 = pf2(f1, s1);  
+                p2 = pf2(f2, s2);  
+                p3 = pf2(f1 + f2, s1 + s2); 
+                p4 = p3 - p2 - p1;
+
+                for (i = 0; i < m; i++) begin
+                    p4 = (p4 << 3) + (p4 << 1); 
+                end
+                for (i = 0; i < (m << 1); i++) begin
+                    p1 = (p1 << 3) + (p1 << 1);
+                end
+
+                pf1 = p1 + p4 + p2;
+
+            end else begin
+                pf1 = 0;
+                for (i = 0; i < num2; i++) begin
+                    pf1 += num1;
+                end
+            end
+        end
+    endfunction
+    function [63:0] pf2;
+        input [63:0] num1; 
+        input [63:0] num2;
+        reg [63:0] temp_num1;
+        reg [63:0] f1, f2, s1, s2; 
+        reg [63:0] p1, p2, p3, p4; 
+        reg [63:0] buf1, buf2, i, m, digit_count;
+
+        begin
+            
+            digit_count = 0;
+            temp_num1 = num1; 
+            while (temp_num1 > 0) begin
+                temp_num1 = temp_num1 / 10; 
+                digit_count = digit_count + 1;
+            end
+            
+            
+            m = (digit_count) >> 1;
+            
+            if (digit_count > 1) begin
+                buf1 = 10;
+                buf2 = 10;
+                for (i = 0; i < m-1; i++) begin
+                    buf1 = (buf1 << 3) + (buf1 << 1); 
+                end
+                for (i = 0; i < (m << 1) - 1; i++) begin
+                    buf2 = (buf2 << 3) + (buf2 << 1);
+                end
+
+                
+                f1 = num1 / buf1; 
+                f2 = num1 % buf1; 
+                s1 = num2 / buf1; 
+                s2 = num2 % buf1; 
+
+
+                p1 = pf3(f1, s1);  
+                p2 = pf3(f2, s2);  
+                p3 = pf3(f1 + f2, s1 + s2); 
+                p4 = p3 - p2 - p1;
+                
+                for (i = 0; i < m; i++) begin
+                    p4 = (p4 << 3) + (p4 << 1); 
+                end
+                for (i = 0; i < (m << 1); i++) begin
+                    p1 = (p1 << 3) + (p1 << 1);
+                end
+                pf2 = p1 + p4 + p2;
+
+            end else begin
+                pf2 = 0;
+                for (i = 0; i < num2; i++) begin
+                    pf2 += num1;
+                end
+            end
+        end
+    endfunction
+    function [63:0] pf3;
+        input [63:0] num1; 
+        input [63:0] num2;
+        reg [63:0] temp_num1;
+        reg [63:0] f1, f2, s1, s2; 
+        reg [63:0] p1, p2, p3, p4; 
+        reg [63:0] buf1, buf2, i, m, digit_count;
+
+        begin
+            
+            digit_count = 0;
+            temp_num1 = num1; 
+            while (temp_num1 > 0) begin
+                temp_num1 = temp_num1 / 10; 
+                digit_count = digit_count + 1;
+            end
+            
+            
+            m = (digit_count) >> 1;
+            
+            if (digit_count > 1) begin
+                buf1 = 10;
+                buf2 = 10;
+                for (i = 0; i < m-1; i++) begin
+                    buf1 = (buf1 << 3) + (buf1 << 1); 
+                end
+                for (i = 0; i < (m << 1) - 1; i++) begin
+                    buf2 = (buf2 << 3) + (buf2 << 1);
+                end
+
+                
+                f1 = num1 / buf1; 
+                f2 = num1 % buf1; 
+                s1 = num2 / buf1; 
+                s2 = num2 % buf1; 
+                
+                p1 = 0;
+                for (i = 0; i < s1; i++) begin
+                    p1 +=f1;
+                end
+                p2 = 0;
+                for (i = 0; i < s2; i++) begin
+                    p2 +=f2;
+                end
+                p3 = 0;
+                for (i = 0; i < (s1 + s2); i++) begin
+                    p3 +=(f1 + f2);
+                end
+                p4 = p3 - p2 - p1;
+
+                for (i = 0; i < m; i++) begin
+                    p4 = (p4 << 3) + (p4 << 1); 
+                end
+                for (i = 0; i < (m << 1); i++) begin
+                    p1 = (p1 << 3) + (p1 << 1);
+                end
+                pf3 = p1 + p4 + p2;
+
+            end else begin
+                pf3 = 0;
+                for (i = 0; i < num2; i++) begin
+                    pf3 += num1;
+                end
+            end
+        end
+    endfunction
+    always @(*) begin
+            solution = karatsuba(first_num, second_num);
         end
 endmodule

@@ -4,6 +4,8 @@
 #include <fstream>
 #include <cmath>
 #include <random>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
 solution::solution()
@@ -105,16 +107,16 @@ void solution::terminalInterface()
 		answer2 = "test.v";*/
 	int inp_digit;
 	do {
-		cout << "Input digit numbers (int > 0)" << endl;
+		cout << "Input digit numbers (int >= 1)" << endl;
 		cin >> inp_digit;
-	} while (inp_digit < 0);
+	} while (inp_digit < 1);
 	solution::setDigit(inp_digit);
 
 	int inp_quantity_of_tests;
 	do {
-		cout << "Input quantity of tests  (int > 0)" << endl;
+		cout << "Input quantity of tests  (int > 1)" << endl;
 		cin >> inp_quantity_of_tests;
-	} while (inp_quantity_of_tests < 0);
+	} while (inp_quantity_of_tests < 1);
 	solution::setQuantityOfTests(inp_quantity_of_tests);
 
 	solution::createFiles();
@@ -133,8 +135,11 @@ void createMainFileToDigitOne(string file_name)
 		main << "\tinput [3:0] second_num,\n";
 		main << "\toutput reg [6:0] solution\n";
 		main << ");\n";
+		main << "\treg [3:0] buf2\n";
 		main << "\talways @(*) begin\n";
-		main << "\t\tsolution = first_num * second_num;\n";
+		main << "\t\tfor (buf2 =0; buf2 < second_num; buf2++) begin\n";
+		main << "\t\t\tsolution = solution + first_num;\n";
+		main << "\t\tend\n";
 		main << "\tend\n";
 		main << "endmodule\n";
 		main.close();
@@ -145,52 +150,139 @@ void createMainFileToDigitOne(string file_name)
 		cout << "Something went wrong..." << endl;
 	}
 }
-void createMainFileToDigitMoreOne(int digit,string file_name)
+
+
+void createMainFileToDigitMoreOne(int digit, string file_name)
 {
 	ofstream main(file_name);
 
 	if (main.is_open())
 	{
 		main << "module main(\n";
-		main << "\tinput ["<< (int(log2(pow(10, digit)))+1) <<":0] first_num, \n"; // производится расчет сколько бит необходимо для записи любого числа разрядности digit
-		main << "\tinput ["<< (int(log2(pow(10, digit))) + 1) <<":0] second_num,\n";
-		main << "\toutput reg ["<< (int(log2(pow(10, 2*(digit)))) + 1) <<":0] solution\n"; // аналогично, но для произведения 
+		main << "\tinput [" << (int(log2(pow(10, digit))) + 1) << ":0] first_num, \n"; // производится расчет сколько бит необходимо для записи любого числа разрядности digit
+		main << "\tinput [" << (int(log2(pow(10, digit))) + 1) << ":0] second_num,\n";
+		main << "\toutput reg [" << (int(log2(pow(10, 2 * (digit)))) + 1) << ":0] solution\n"; // аналогично, но для произведения 
 		main << ");\n";
-		main << "\treg ["<< (int(log2(digit)) + 1) <<":0] n = "<< digit <<";\n";
-		main << "\treg ["<< (int(log2(int(digit/2))) + 1) <<":0] m;\n";
-		main << "\treg ["<< (digit % 2 ? (int(log2(pow(10, (int(digit / 2) + 1)))) + 1) : (int(log2(pow(10, (int(digit / 2))))) + 1)) <<":0] F_F_P;\n"; // =( сложное выражение для того чтобы правильно выделить память для вспомогательных переменных
-		main << "\treg ["<< (digit % 2 ? (int(log2(pow(10, (int(digit / 2) + 1)))) + 1) : (int(log2(pow(10, (int(digit / 2))))) + 1)) <<":0] F_S_P;\n";
-		main << "\treg ["<< (digit % 2 ? (int(log2(pow(10, (int(digit / 2) + 1)))) + 1) : (int(log2(pow(10, (int(digit / 2))))) + 1)) <<":0] S_F_P;\n";
-		main << "\treg ["<< (digit % 2 ? (int(log2(pow(10, (int(digit / 2) + 1)))) + 1) : (int(log2(pow(10, (int(digit / 2))))) + 1)) <<":0] S_S_P;\n";
-		main << "\treg ["<< (int(log2(pow(10, digit + 1))) + 1) <<":0] p1;\n";
-		main << "\treg ["<< (int(log2(pow(10, digit + 1))) + 1) <<":0] p2;\n";
-		main << "\treg ["<< (int(log2(pow(10, ((digit + 1) / 2 + 1) * 2))) + 1) <<":0] p3;\n";
-		main << "\treg ["<< (int(log2(pow(10, ((digit + 1) / 2 + 1) * 2))) + 1) <<":0] p4;\n";
-		main << "\treg ["<< (int(log2(pow(10, (digit / 2)))) + 1) <<":0] buf1;\n"; // вычисление правильного количества памяти на вспомогательные переменные
-		main << "\treg ["<< (int(log2(pow(10, digit))) + 1) <<":0] buf2;\n";
-		main << "\treg ["<< (int(log2(int(digit / 2))) + 1) <<":0] i;\n";
+		main << "\tfunction [" << (int(log2(pow(10, 2 * (digit)))) + 1) << ":0] karatsuba;\n";
+		main << "\t\tinput [" << (int(log2(pow(10, digit))) + 1) << ":0] num1;\n";
+		main << "\t\tinput [" << (int(log2(pow(10, digit))) + 1) << ":0] num2;\n";
+		main << "\t\treg [" << (int(log2(pow(10, digit))) + 1) << ":0] temp_num1;\n";
+		main << "\t\treg [" << (digit % 2 ? (int(log2(pow(10, (int(digit / 2) + 1)))) + 1) : (int(log2(pow(10, (int(digit / 2))))) + 1)) << ":0] f1, f2, s1, s2; \n";
+		main << "\t\treg [" << (int(log2(pow(10, 2 * (digit)))) + 1) << ":0] p1, p2, p3, p4;\n";
+		main << "\t\treg [" << (int(log2(pow(10, digit + 1))) + 1) << ":0] buf1, buf2, i, m, digit_count;\n";
+		main << "\t\tbegin\n";
+		main << "\t\t\tdigit_count = 0;\n";
+		main << "\t\t\ttemp_num1 = num1; \n";
+		main << "\t\t\twhile (temp_num1 > 0) begin\n";
+		main << "\t\t\t\ttemp_num1 = temp_num1 / 10; \n";
+		main << "\t\t\t\tdigit_count = digit_count + 1;\n";
+		main << "\t\t\tend\n";
+		main << "\t\t\tm = (digit_count) >> 1;\n";
+		main << "\t\t\tif (digit_count > 1) begin\n";
+		main << "\t\t\t\tbuf1 = 10;\n";
+		main << "\t\t\t\tbuf2 = 10;\n";
+		main << "\t\t\t\tfor (i = 0; i < m-1; i++) begin\n";
+		main << "\t\t\t\t\tbuf1 = (buf1 << 3) + (buf1 << 1); \n";
+		main << "\t\t\t\tend\n";
+		main << "\t\t\t\tfor (i = 0; i < (m << 1) - 1; i++) begin\n";
+		main << "\t\t\t\t\tbuf2 = (buf2 << 3) + (buf2 << 1);\n";
+		main << "\t\t\t\tend\n";
+		main << "\t\t\t\tf1 = num1 / buf1;\n";
+		main << "\t\t\t\tf2 = num1 % buf1; \n";
+		main << "\t\t\t\ts1 = num2 / buf1; \n";
+		main << "\t\t\t\ts2 = num2 % buf1;\n";
+		main << "\t\t\t\tp1 = pf1(f1, s1); \n";
+		main << "\t\t\t\tp2 = pf1(f2, s2); \n";
+		main << "\t\t\t\tp3 = pf1(f1 + f2, s1 + s2); \n";
+		main << "\t\t\t\tp4 = p3 - p2 - p1;\n";
+		main << "\t\t\t\tfor (i = 0; i < m; i++) begin\n";
+		main << "\t\t\t\t\tp4 = (p4 << 3) + (p4 << 1);\n";
+		main << "\t\t\t\tend\n";
+		main << "\t\t\t\tfor (i = 0; i < (m << 1); i++) begin\n";
+		main << "\t\t\t\t\tp1 = (p1 << 3) + (p1 << 1);\n";
+		main << "\t\t\t\tend\n";
+		main << "\t\t\t\tkaratsuba = p1 + p4 + p2;\n";
+		main << "\t\t\tend else begin\n";
+		main << "\t\t\t\tkaratsuba = 0;\n";
+		main << "\t\t\t\tfor (i = 0; i < num2; i++) begin\n";
+		main << "\t\t\t\t\tkaratsuba += num1;\n";
+		main << "\t\t\t\tend\n";
+		main << "\t\t\tend\n";
+		main << "\t\tend\n";
+		main << "\tendfunction\n";
+
+		int count = 1;
+		int buf;
+		do {
+			buf = maxIteration(digit);
+			cout << "Input count of recurs iteration karatsuba algorithm (" << buf << " >= int >= 1)" << endl;
+			cin >> count;
+		} while (count < 1 or count > maxIteration(digit));
+		int i;
+		for (i = 1; i < count - 1; i++)
+			createIteration(main, i, digit/*/(pow(2,i))*/);
+
+		main << "\tfunction [" << (int(log2(pow(10, 2 * (digit /*/(pow(2,i))*/)))) + 1) << ":0] pf" << count - 1 << ";\n";
+		main << "\t\tinput [" << (int(log2(pow(10, digit /*/(pow(2,i))*/))) + 1) << ":0] num1;\n";
+		main << "\t\tinput [" << (int(log2(pow(10, digit /*/(pow(2,i))*/))) + 1) << ":0] num2;\n";
+		main << "\t\treg [" << (int(log2(pow(10, digit /*/(pow(2,i))*/))) + 1) << ":0] temp_num1;\n";
+		main << "\t\treg [" << ((digit) % 2 ? (int(log2(pow(10, (int(digit / 2) + 1)))) + 1) : (int(log2(pow(10, (int(digit / 2))))) + 1)) << ":0] f1, f2, s1, s2; \n";
+		main << "\t\treg [" << (int(log2(pow(10, 2 * (digit)))) + 1) << ":0] p1, p2, p3, p4;\n";
+		main << "\t\treg [" << (int(log2(pow(10, (digit /*/(pow(2,i))*/))) + 1) + 1) << ":0] buf1, buf2, i, m, digit_count;\n";
+		main << "\t\tbegin\n";
+		main << "\t\t\tdigit_count = 0;\n";
+		main << "\t\t\ttemp_num1 = num1; \n";
+		main << "\t\t\twhile (temp_num1 > 0) begin\n";
+		main << "\t\t\t\ttemp_num1 = temp_num1 / 10; \n";
+		main << "\t\t\t\tdigit_count = digit_count + 1;\n";
+		main << "\t\t\tend\n";
+		main << "\t\t\tm = (digit_count) >> 1;\n";
+		main << "\t\t\tif (digit_count > 1) begin\n";
+		main << "\t\t\t\tbuf1 = 10;\n";
+		main << "\t\t\t\tbuf2 = 10;\n";
+		main << "\t\t\t\tfor (i = 0; i < m-1; i++) begin\n";
+		main << "\t\t\t\t\tbuf1 = (buf1 << 3) + (buf1 << 1); \n";
+		main << "\t\t\t\tend\n";
+		main << "\t\t\t\tfor (i = 0; i < (m << 1) - 1; i++) begin\n";
+		main << "\t\t\t\t\tbuf2 = (buf2 << 3) + (buf2 << 1);\n";
+		main << "\t\t\t\tend\n";
+		main << "\t\t\t\tf1 = num1 / buf1;\n";
+		main << "\t\t\t\tf2 = num1 % buf1; \n";
+		main << "\t\t\t\ts1 = num2 / buf1; \n";
+		main << "\t\t\t\ts2 = num2 % buf1;\n";
+		main << "\t\t\t\tp1 = 0;\n";
+		main << "\t\t\t\tfor (i = 0; i < s1; i++) begin\n";
+		main << "\t\t\t\t\tp1 +=f1;\n";
+		main << "\t\t\t\tend\n";
+		main << "\t\t\t\tp2 = 0;\n";
+		main << "\t\t\t\tfor (i = 0; i < s2; i++) begin\n";
+		main << "\t\t\t\t\tp2 +=f2;\n";
+		main << "\t\t\t\tend\n";
+		main << "\t\t\t\tp3 = 0;\n";
+		main << "\t\t\t\tfor (i = 0; i < (s1 + s2); i++) begin\n";
+		main << "\t\t\t\t\tp3 +=(f1 + f2);\n";
+		main << "\t\t\t\tend\n";
+		main << "\t\t\t\tp4 = p3 - p2 - p1;\n";
+		main << "\t\t\t\tfor (i = 0; i < m; i++) begin\n";
+		main << "\t\t\t\t\tp4 = (p4 << 3) + (p4 << 1);\n";
+		main << "\t\t\t\tend\n";
+		main << "\t\t\t\tfor (i = 0; i < (m << 1); i++) begin\n";
+		main << "\t\t\t\t\tp1 = (p1 << 3) + (p1 << 1);\n";
+		main << "\t\t\t\tend\n";
+		main << "\t\t\t\tpf" << count - 1 << " = p1 + p4 + p2;\n";
+		main << "\t\t\tend else begin\n";
+		main << "\t\t\t\tpf" << count - 1 << " = 0;\n";
+		main << "\t\t\t\tfor (i = 0; i < num2; i++) begin\n";
+		main << "\t\t\t\t\tpf" << count - 1 << " += num1;\n";
+		main << "\t\t\t\tend\n";
+		main << "\t\t\tend\n";
+		main << "\t\tend\n";
+		main << "\tendfunction\n";
 		main << "\talways @(*) begin\n";
-		main << "\t\tm = n >> 1;\n";
-		main << "\t\tsolution = 0;\n";
-		main << "\t\tbuf1 = 10;\n";
-		main << "\t\tbuf2 = 10;\n";
-		main << "\t\tfor (i = 0; i < m - 1; i++) begin\n";
-		main << "\t\t\tbuf1 = buf1 * 10;\n";
+		main << "\t\t\tsolution = karatsuba(first_num, second_num);\n";
 		main << "\t\tend\n";
-		main << "\t\tfor (i = 0; i < 2 * m - 1; i++) begin\n";
-		main << "\t\t\tbuf2 = buf2 * 10;\n";
-		main << "\t\tend\n";
-		main << "\t\tF_F_P = first_num / buf1;\n";
-		main << "\t\tF_S_P = first_num % buf1;\n";
-		main << "\t\tS_F_P = second_num / buf1;\n";
-		main << "\t\tS_S_P = second_num % buf1;\n";
-		main << "\t\tp1 = F_F_P * S_F_P;\n";
-		main << "\t\tp2 = F_S_P * S_S_P;\n";
-		main << "\t\tp3 = (F_F_P + F_S_P)*(S_F_P + S_S_P);\n";
-		main << "\t\tp4 = p3 - p2 - p1;\n";
-		main << "\t\tsolution = p1 * buf2 + p4 * buf1 + p2;\n";
-		main << "\tend\n";
 		main << "endmodule\n";
+
 		main.close();
 		cout << "File " << file_name << " was created" << endl;
 	}
@@ -198,6 +290,56 @@ void createMainFileToDigitMoreOne(int digit,string file_name)
 	{
 		cout << "Something went wrong..." << endl;
 	}
+}
+void createIteration(ofstream& main, int count, int digit)
+{
+	main << "\tfunction [" << (int(log2(pow(10, 2 * (digit)))) + 1) << ":0] pf"<< count <<";\n";
+	main << "\t\tinput [" << (int(log2(pow(10, digit))) + 1) << ":0] num1;\n";
+	main << "\t\tinput [" << (int(log2(pow(10, digit))) + 1) << ":0] num2;\n";
+	main << "\t\treg [" << (int(log2(pow(10, digit))) + 1) << ":0] temp_num1;\n";
+	main << "\t\treg [" << (digit % 2 ? (int(log2(pow(10, (int(digit / 2) + 1)))) + 1) : (int(log2(pow(10, (int(digit / 2))))) + 1)) << ":0] f1, f2, s1, s2; \n";
+	main << "\t\treg [" << (int(log2(pow(10, 2 * (digit)))) + 1) << ":0] p1, p2, p3, p4;\n";
+	main << "\t\treg [" << (int(log2(pow(10, digit))) + 1) << ":0] buf1, buf2, i, m, digit_count;\n";
+	main << "\t\tbegin\n";
+	main << "\t\t\tdigit_count = 0;\n";
+	main << "\t\t\ttemp_num1 = num1; \n";
+	main << "\t\t\twhile (temp_num1 > 0) begin\n";
+	main << "\t\t\t\ttemp_num1 = temp_num1 / 10; \n";
+	main << "\t\t\t\tdigit_count = digit_count + 1;\n";
+	main << "\t\t\tend\n";
+	main << "\t\t\tm = (digit_count) >> 1;\n";
+	main << "\t\t\tif (digit_count > 1) begin\n";
+	main << "\t\t\t\tbuf1 = 10;\n";
+	main << "\t\t\t\tbuf2 = 10;\n";
+	main << "\t\t\t\tfor (i = 0; i < m-1; i++) begin\n";
+	main << "\t\t\t\t\tbuf1 = (buf1 << 3) + (buf1 << 1); \n";
+	main << "\t\t\t\tend\n";
+	main << "\t\t\t\tfor (i = 0; i < (m << 1) - 1; i++) begin\n";
+	main << "\t\t\t\t\tbuf2 = (buf2 << 3) + (buf2 << 1);\n";
+	main << "\t\t\t\tend\n";
+	main << "\t\t\t\tf1 = num1 / buf1;\n";
+	main << "\t\t\t\tf2 = num1 % buf1; \n";
+	main << "\t\t\t\ts1 = num2 / buf1; \n";
+	main << "\t\t\t\ts2 = num2 % buf1;\n";
+	main << "\t\t\t\tp1 = pf" << (count + 1) << "(f1, s1); \n";
+	main << "\t\t\t\tp2 = pf" << (count + 1) << "(f2, s2); \n";
+	main << "\t\t\t\tp3 = pf" << (count + 1) << "(f1 + f2, s1 + s2); \n";
+	main << "\t\t\t\tp4 = p3 - p2 - p1;\n";
+	main << "\t\t\t\tfor (i = 0; i < m; i++) begin\n";
+	main << "\t\t\t\t\tp4 = (p4 << 3) + (p4 << 1);\n";
+	main << "\t\t\t\tend\n";
+	main << "\t\t\t\tfor (i = 0; i < (m << 1); i++) begin\n";
+	main << "\t\t\t\t\tp1 = (p1 << 3) + (p1 << 1);\n";
+	main << "\t\t\t\tend\n";
+	main << "\t\t\t\tpf" << count << " = p1 + p4 + p2;\n";
+	main << "\t\t\tend else begin\n";
+	main << "\t\t\t\tpf" << count << " = 0;\n";
+	main << "\t\t\t\tfor (i = 0; i < num2; i++) begin\n";
+	main << "\t\t\t\t\tpf" << count << " += num1;\n";
+	main << "\t\t\t\tend\n";
+	main << "\t\t\tend\n";
+	main << "\t\tend\n";
+	main << "\tendfunction\n";
 }
 
 
@@ -209,7 +351,7 @@ void createTestFileToQOT(int quantity_of_test, int digit, string file_name)
 	do {
 		cout << "Input type of tests (1 - random / 0 - manual entry)" << endl;
 		cin >> random_test;
-	} while (random_test != 1 or random_test != 0);
+	} while (random_test != 1 && random_test != 0);
 	if (test.is_open())
 	{
 		test << "module test;\n";
@@ -280,4 +422,37 @@ long long randomNum(int digit)
 	uniform_int_distribution<> dist(min_value, max_value); 
 
 	return dist(gen);
+}
+
+int maxIteration(int digit) {
+	vector<int> arr = { digit, digit }; 
+	bool fl = 1;
+	int f = 2;
+	int s = 0;
+	int dop = 2;
+
+	int it = 1; 
+
+	while (fl) {
+		fl = 0;
+		for (int i = s; i < f; ++i) {
+			if (arr[i] > 1) {
+				int n1 = arr[i] / 2 + arr[i] % 2;
+				int n2 = arr[i] / 2;
+				int n3 = max(n1, n2) + 1;
+
+				arr.push_back(n1); arr.push_back(n2); arr.push_back(n3);
+
+				if (n2 > 1)
+					fl = 1; 
+			}
+			else { arr.push_back(0); arr.push_back(0); arr.push_back(0); }
+		}
+		s = f;
+		dop = dop * 3;
+		f = f + dop;
+		it++;
+	}
+
+	return it; 
 }
