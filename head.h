@@ -30,8 +30,8 @@ private:
 void createMainFileToDigitOne(std::string file_name); // создает файл логики file_name.v файл на основе данных объекта для размерности 1
 void createMainFileToDigitMoreOne(int digit, std::string file_name);// создает файл логики file_name.v файл на основе данных объекта для любой размерности digit
 void createTestFileToQOT(int quantity_of_test, int digit, std::string file_name = "test.v"); // создает file_name.v файл на основе данных объекта для размерности 1
-void createTest(std::ofstream& test, int digit); // создает один тест со случайными числами размерности digit для файла тестирования test
-void createTest(std::ofstream& test, long long first_num, long long second_num);// создает один тест с задаваемыми через консоль числами размерности digit для файла тестирования test
+void createTest(std::ofstream& test, int digit, int number_of_test); // создает один тест со случайными числами размерности digit для файла тестирования test
+void createTest(std::ofstream& test, long long first_num, long long second_num, int number_of_test);// создает один тест с задаваемыми через консоль числами размерности digit для файла тестирования test
 long long randomNum(int digit); // возвращает случайное число размерности digit
 void createIteration(ofstream& main, int count, int digit); // создание одной дополнительной итерации рекурсии алгоритма карацубы
 int maxIteration(int digit); // определение максимальной итерации для выполнения алгоритма карацубы (больше чем на это количество итераций невозможно опуститься)

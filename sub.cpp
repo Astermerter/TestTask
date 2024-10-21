@@ -41,6 +41,7 @@ void solution::setDigit(int inp_digit)
 		do {
 			cout << "Input digit numbers (int > 0)" << endl;
 			cin >> digit;
+			if (cin.fail()) { cout << "Invalid input. Please enter a valid integer." << endl; cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
 		} while (digit < 0);
 	}
 	else
@@ -54,6 +55,7 @@ void solution::setQuantityOfTests(int inp_quantity_of_tests)
 		do {
 			cout << "Input quantity of tests  (int > 0)" << endl;
 			cin >> quantity_of_tests;
+			if (cin.fail()) { cout << "Invalid input. Please enter a valid integer." << endl; cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
 		} while (quantity_of_tests < 0);
 	}
 	else
@@ -109,6 +111,7 @@ void solution::terminalInterface()
 	do {
 		cout << "Input digit numbers (int >= 1)" << endl;
 		cin >> inp_digit;
+		if (cin.fail()) { cout << "Invalid input. Please enter a valid integer." << endl; cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
 	} while (inp_digit < 1);
 	solution::setDigit(inp_digit);
 
@@ -116,6 +119,7 @@ void solution::terminalInterface()
 	do {
 		cout << "Input quantity of tests  (int > 1)" << endl;
 		cin >> inp_quantity_of_tests;
+		if (cin.fail()) { cout << "Invalid input. Please enter a valid integer." << endl; cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
 	} while (inp_quantity_of_tests < 1);
 	solution::setQuantityOfTests(inp_quantity_of_tests);
 
@@ -217,10 +221,14 @@ void createMainFileToDigitMoreOne(int digit, string file_name)
 			buf = maxIteration(digit);
 			cout << "Input count of recurs iteration karatsuba algorithm (" << buf << " >= int >= 1)" << endl;
 			cin >> count;
+			if (cin.fail()) { cout << "Invalid input. Please enter a valid integer." << endl; cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
 		} while (count < 1 or count > maxIteration(digit));
 		int i;
 		for (i = 1; i < count - 1; i++)
 			createIteration(main, i, digit/*/(pow(2,i))*/);
+
+		if (count == 1)
+			count++;
 
 		main << "\tfunction [" << (int(log2(pow(10, 2 * (digit /*/(pow(2,i))*/)))) + 1) << ":0] pf" << count - 1 << ";\n";
 		main << "\t\tinput [" << (int(log2(pow(10, digit /*/(pow(2,i))*/))) + 1) << ":0] num1;\n";
@@ -351,6 +359,7 @@ void createTestFileToQOT(int quantity_of_test, int digit, string file_name)
 	do {
 		cout << "Input type of tests (1 - random / 0 - manual entry)" << endl;
 		cin >> random_test;
+		if (cin.fail()) { cout << "Invalid input. Please enter a valid integer." << endl; cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
 	} while (random_test != 1 && random_test != 0);
 	if (test.is_open())
 	{
@@ -367,7 +376,7 @@ void createTestFileToQOT(int quantity_of_test, int digit, string file_name)
 		if (random_test == 1)
 		{
 			for (int i = 0; i < quantity_of_test; i++)
-				createTest(test, digit);
+				createTest(test, digit, i+1);
 		}
 		else
 		{
@@ -376,12 +385,14 @@ void createTestFileToQOT(int quantity_of_test, int digit, string file_name)
 				do {
 					cout << "Input first num > 0 and " << digit << " digit" << endl;
 					cin >> first_num;
+					if (cin.fail()) { cout << "Invalid input. Please enter a valid integer." << endl; cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
 				} while (pow(10, digit - 1) > first_num || first_num > pow(10,digit) - 1);
 				do {
 					cout << "Input second num > 0 and " << digit << " digit" << endl;
 					cin >> second_num;
+					if (cin.fail()) { cout << "Invalid input. Please enter a valid integer." << endl; cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
 				} while (pow(10, digit - 1) > second_num || second_num > pow(10, digit) - 1);
-				createTest(test, first_num, second_num);
+				createTest(test, first_num, second_num, i+1);
 			}
 		}
 		test << "\tend\n";
@@ -396,21 +407,29 @@ void createTestFileToQOT(int quantity_of_test, int digit, string file_name)
 	}
 }
 
-void createTest(ofstream& test, int digit) // перегружаю функцию чтобы было удобнее писать
+void createTest(ofstream& test, int digit, int number_of_test) // перегружаю функцию чтобы было удобнее писать
 {
 	int buf = randomNum(digit);
 	test << "\t\tfirst_num = " << buf << ";\n";
 	buf = randomNum(digit);
 	test << "\t\tsecond_num = "<< buf <<";\n";
 	test << "\t\t#10;\n";
-	test << "\t\t$display(\"solution %d * %d is %d\", first_num, second_num, solution);\n";
+	test << "\t\tif (solution == first_num*second_num) begin\n";
+	test << "\t\t\t$display(\"Test Passed\");\n";
+	test << "\t\tend else begin\n";
+	test << "\t\t\t$display(\"Test error\");\n";
+	test << "\t\tend\n";
 }
-void createTest(ofstream &test, long long first_num, long long second_num)
+void createTest(ofstream &test, long long first_num, long long second_num, int number_of_test)
 {
 	test << "\t\tfirst_num = "<< first_num <<";\n";
 	test << "\t\tsecond_num = "<< second_num <<";\n";
 	test << "\t\t#10;\n";
-	test << "\t\t$display(\"solution %d * %d is %d\", first_num, second_num, solution);\n";
+	test << "\t\tif (solution == first_num*second_num) begin\n";
+	test << "\t\t\t$display(\"Test Passed\");\n";
+	test << "\t\tend else begin\n";
+	test << "\t\t\t$display(\"Test error\");\n";
+	test << "\t\tend\n";
 }
 
 long long randomNum(int digit)

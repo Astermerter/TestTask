@@ -10,20 +10,30 @@ module test;
         );
 
         initial begin
-                first_num = 123; // ������� ��������� ����� � c++
+                first_num = 123; 
                 second_num = 345;
                 #10;
-                $display("solution %d * %d is %d", first_num, second_num, solution);
-
+                if (solution == first_num*second_num) begin
+                        $display("Test Passed");
+                end else begin
+                        $display("Test error");
+                end
                 first_num = 154;
                 second_num = 654;
                 #10;
-                $display("solution %d * %d is %d", first_num, second_num, solution);
-
+                if (solution == first_num*second_num) begin
+                        $display("Test Passed");
+                end else begin
+                        $display("Test error");
+                end
                 first_num = 186;
                 second_num = 348;
                 #10;
-                $display("solution %d * %d is %d", first_num, second_num, solution);
+                if (solution == first_num*second_num) begin
+                        $display("Test Passed");
+                end else begin
+                        $display("Test error");
+                end
                 $finish;
         end
 endmodule
