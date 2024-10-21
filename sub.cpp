@@ -355,7 +355,7 @@ void createTestFileToQOT(int quantity_of_test, int digit, string file_name)
 {
 	ofstream test(file_name);
 	bool random_test = 0;
-	long long first_num, second_num;
+	string first_num, second_num;
 	do {
 		cout << "Input type of tests (1 - random / 0 - manual entry)" << endl;
 		cin >> random_test;
@@ -384,14 +384,16 @@ void createTestFileToQOT(int quantity_of_test, int digit, string file_name)
 			{
 				do {
 					cout << "Input first num > 0 and " << digit << " digit" << endl;
-					cin >> first_num;
+					getline(cin, first_num);
 					if (cin.fail()) { cout << "Invalid input. Please enter a valid integer." << endl; cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
-				} while (pow(10, digit - 1) > first_num || first_num > pow(10,digit) - 1);
+				} while (validator(first_num));
 				do {
 					cout << "Input second num > 0 and " << digit << " digit" << endl;
-					cin >> second_num;
+					getline(cin, second_num);
+					if (second_num.empty()) { cout << "Invalid input. Input cannot be empty. Please try again." << endl; continue; }
+
 					if (cin.fail()) { cout << "Invalid input. Please enter a valid integer." << endl; cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
-				} while (pow(10, digit - 1) > second_num || second_num > pow(10, digit) - 1);
+				} while (validator(second_num));
 				createTest(test, first_num, second_num, i+1);
 			}
 		}
@@ -409,10 +411,8 @@ void createTestFileToQOT(int quantity_of_test, int digit, string file_name)
 
 void createTest(ofstream& test, int digit, int number_of_test) // перегружаю функцию чтобы было удобнее писать
 {
-	int buf = randomNum(digit);
-	test << "\t\tfirst_num = " << buf << ";\n";
-	buf = randomNum(digit);
-	test << "\t\tsecond_num = "<< buf <<";\n";
+	test << "\t\tfirst_num = " << randomNum(digit) << ";\n";
+	test << "\t\tsecond_num = "<< randomNum(digit) <<";\n";
 	test << "\t\t#10;\n";
 	test << "\t\tif (solution == first_num*second_num) begin\n";
 	test << "\t\t\t$display(\"Test Passed\");\n";
@@ -420,7 +420,7 @@ void createTest(ofstream& test, int digit, int number_of_test) // перегру
 	test << "\t\t\t$display(\"Test error\");\n";
 	test << "\t\tend\n";
 }
-void createTest(ofstream &test, long long first_num, long long second_num, int number_of_test)
+void createTest(ofstream &test, string first_num, string second_num, int number_of_test)
 {
 	test << "\t\tfirst_num = "<< first_num <<";\n";
 	test << "\t\tsecond_num = "<< second_num <<";\n";
@@ -432,15 +432,25 @@ void createTest(ofstream &test, long long first_num, long long second_num, int n
 	test << "\t\tend\n";
 }
 
-long long randomNum(int digit)
+string randomNum(int digit)
 {
-	long long min_value = pow(10, digit - 1);
-	long long max_value = pow(10, digit) - 1;
-	random_device rd;
-	mt19937 gen(rd()); // генератор случайных чисел на основе алгоритма Mersenne Twister
-	uniform_int_distribution<> dist(min_value, max_value); 
+	string num;
+	if (digit <= 10)
+	{
+		long long min_value = pow(10, digit - 1);
+		long long max_value = pow(10, digit) - 1;
+		random_device rd;
+		mt19937 gen(rd()); // генератор случайных чисел на основе алгоритма Mersenne Twister
+		uniform_int_distribution<> dist(min_value, max_value);
+		num = to_string(dist(gen));
+	}
+	else
+	{
+		num = num + randomNum(digit - 10); 
+	}
 
-	return dist(gen);
+
+	return num;
 }
 
 int maxIteration(int digit) {
@@ -474,4 +484,12 @@ int maxIteration(int digit) {
 	}
 
 	return it; 
+}
+
+bool validator(const string& num)
+{
+	for (char c : num)
+		if (!isdigit(c))
+			return true;
+	return false; 
 }
