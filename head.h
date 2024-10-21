@@ -7,19 +7,19 @@ using namespace std;
 
 class solution {
 public:
-    solution(); // инициализирующие конструкторы
+    solution(); // РёРЅРёС†РёР°Р»РёР·РёСЂСѓСЋС‰РёРµ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹
     solution(int inp_digit, int inp_quantity_of_tests);
 
-    int getDigit(); // геттеры / сеттеры для приватных переменных 
+    int getDigit(); // РіРµС‚С‚РµСЂС‹ / СЃРµС‚С‚РµСЂС‹ РґР»СЏ РїСЂРёРІР°С‚РЅС‹С… РїРµСЂРµРјРµРЅРЅС‹С… 
     int getQuantityOfTest();
     void setDigit(int inp_digit = -1);
     void setQuantityOfTests(int inp_quantity_of_tests = -1);
 
-    void createMainFile(std::string file_name = "main.v"); // создает файл логики file_name.v файл на основе данных объекта
-    void createTestFile(std::string file_name = "test.v"); // создает файл тестирования file_name.v файл на основе данных объекта
-    void createFiles(std::string main_file_name = "main.v", std::string test_file_name = "test.v"); // создает два файла с названиями файл логики main_file_name.v и файл тестирования test_file_name.v по данным объекта
+    void createMainFile(std::string file_name = "main.v"); // СЃРѕР·РґР°РµС‚ С„Р°Р№Р» Р»РѕРіРёРєРё file_name.v С„Р°Р№Р» РЅР° РѕСЃРЅРѕРІРµ РґР°РЅРЅС‹С… РѕР±СЉРµРєС‚Р°
+    void createTestFile(std::string file_name = "test.v"); // СЃРѕР·РґР°РµС‚ С„Р°Р№Р» С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ file_name.v С„Р°Р№Р» РЅР° РѕСЃРЅРѕРІРµ РґР°РЅРЅС‹С… РѕР±СЉРµРєС‚Р°
+    void createFiles(std::string main_file_name = "main.v", std::string test_file_name = "test.v"); // СЃРѕР·РґР°РµС‚ РґРІР° С„Р°Р№Р»Р° СЃ РЅР°Р·РІР°РЅРёСЏРјРё С„Р°Р№Р» Р»РѕРіРёРєРё main_file_name.v Рё С„Р°Р№Р» С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ test_file_name.v РїРѕ РґР°РЅРЅС‹Рј РѕР±СЉРµРєС‚Р°
 
-    void terminalInterface(); // активирует режим работы с объектом через консоль
+    void terminalInterface(); // Р°РєС‚РёРІРёСЂСѓРµС‚ СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ СЃ РѕР±СЉРµРєС‚РѕРј С‡РµСЂРµР· РєРѕРЅСЃРѕР»СЊ
 
 private:
     int digit; // 0-inf
@@ -27,13 +27,13 @@ private:
 };
 
 
-void createMainFileToDigitOne(std::string file_name); // создает файл логики file_name.v файл на основе данных объекта для размерности 1
-void createMainFileToDigitMoreOne(int digit, std::string file_name);// создает файл логики file_name.v файл на основе данных объекта для любой размерности digit
-void createTestFileToQOT(int quantity_of_test, int digit, std::string file_name = "test.v"); // создает file_name.v файл на основе данных объекта для размерности 1
-void createTest(std::ofstream& test, int digit); // создает один тест со случайными числами размерности digit для файла тестирования test
-void createTest(std::ofstream& test, long long first_num, long long second_num);// создает один тест с задаваемыми через консоль числами размерности digit для файла тестирования test
-long long randomNum(int digit); // возвращает случайное число размерности digit
-void createIteration(ofstream& main, int count, int digit);
-int maxIteration(int digit);
+void createMainFileToDigitOne(std::string file_name); // СЃРѕР·РґР°РµС‚ С„Р°Р№Р» Р»РѕРіРёРєРё file_name.v С„Р°Р№Р» РЅР° РѕСЃРЅРѕРІРµ РґР°РЅРЅС‹С… РѕР±СЉРµРєС‚Р° РґР»СЏ СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё 1
+void createMainFileToDigitMoreOne(int digit, std::string file_name);// СЃРѕР·РґР°РµС‚ С„Р°Р№Р» Р»РѕРіРёРєРё file_name.v С„Р°Р№Р» РЅР° РѕСЃРЅРѕРІРµ РґР°РЅРЅС‹С… РѕР±СЉРµРєС‚Р° РґР»СЏ Р»СЋР±РѕР№ СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё digit
+void createTestFileToQOT(int quantity_of_test, int digit, std::string file_name = "test.v"); // СЃРѕР·РґР°РµС‚ file_name.v С„Р°Р№Р» РЅР° РѕСЃРЅРѕРІРµ РґР°РЅРЅС‹С… РѕР±СЉРµРєС‚Р° РґР»СЏ СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё 1
+void createTest(std::ofstream& test, int digit); // СЃРѕР·РґР°РµС‚ РѕРґРёРЅ С‚РµСЃС‚ СЃРѕ СЃР»СѓС‡Р°Р№РЅС‹РјРё С‡РёСЃР»Р°РјРё СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё digit РґР»СЏ С„Р°Р№Р»Р° С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ test
+void createTest(std::ofstream& test, long long first_num, long long second_num);// СЃРѕР·РґР°РµС‚ РѕРґРёРЅ С‚РµСЃС‚ СЃ Р·Р°РґР°РІР°РµРјС‹РјРё С‡РµСЂРµР· РєРѕРЅСЃРѕР»СЊ С‡РёСЃР»Р°РјРё СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё digit РґР»СЏ С„Р°Р№Р»Р° С‚РµСЃС‚РёСЂРѕРІР°РЅРёСЏ test
+long long randomNum(int digit); // РІРѕР·РІСЂР°С‰Р°РµС‚ СЃР»СѓС‡Р°Р№РЅРѕРµ С‡РёСЃР»Рѕ СЂР°Р·РјРµСЂРЅРѕСЃС‚Рё digit
+void createIteration(ofstream& main, int count, int digit); // СЃРѕР·РґР°РЅРёРµ РѕРґРЅРѕР№ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕР№ РёС‚РµСЂР°С†РёРё СЂРµРєСѓСЂСЃРёРё Р°Р»РіРѕСЂРёС‚РјР° РєР°СЂР°С†СѓР±С‹
+int maxIteration(int digit); // РѕРїСЂРµРґРµР»РµРЅРёРµ РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ РёС‚РµСЂР°С†РёРё РґР»СЏ РІС‹РїРѕР»РЅРµРЅРёСЏ Р°Р»РіРѕСЂРёС‚РјР° РєР°СЂР°С†СѓР±С‹ (Р±РѕР»СЊС€Рµ С‡РµРј РЅР° СЌС‚Рѕ РєРѕР»РёС‡РµСЃС‚РІРѕ РёС‚РµСЂР°С†РёР№ РЅРµРІРѕР·РјРѕР¶РЅРѕ РѕРїСѓСЃС‚РёС‚СЊСЃСЏ)
 
 #endif // !sub
