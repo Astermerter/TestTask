@@ -441,17 +441,22 @@ string randomNum(int digit)
 		long long max_value = pow(10, digit) - 1;
 		random_device rd;
 		mt19937 gen(rd()); // генератор случайных чисел на основе алгоритма Mersenne Twister
-		uniform_int_distribution<> dist(min_value, max_value);
+		uniform_int_distribution<long long> dist(min_value, max_value);
 		num = to_string(dist(gen));
 	}
 	else
 	{
-		num = num + randomNum(digit - 10); 
+		long long min_value = pow(10, 9);
+		long long max_value = pow(10, 10) - 1;
+		random_device rd;
+		mt19937 gen(rd());
+		uniform_int_distribution<long long> dist(min_value, max_value);
+		num = to_string(dist(gen)) + randomNum(digit - 10);
 	}
-
 
 	return num;
 }
+
 
 int maxIteration(int digit) {
 	vector<int> arr = { digit, digit }; 
