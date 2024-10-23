@@ -37,5 +37,6 @@ void createIteration(ofstream& main, int count, int digit); // создание 
 int maxIteration(int digit); // определение максимальной итерации для выполнения алгоритма карацубы (больше чем на это количество итераций невозможно опуститься)
 bool validator(const string& num, int digit); // проверяет, является ли введенная пользователем строка числом
 void createSwitchMultiplication(ofstream& main, int number_of_iteration);
+void createSmartDividing(ofstream& main, int digit);
 
 #endif // !sub
