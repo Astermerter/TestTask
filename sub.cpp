@@ -411,9 +411,9 @@ void createTest(ofstream& test, int digit, int number_of_test) // перегру
 	test << "\t\tsecond_num = "<< randomNum(digit) <<";\n";
 	test << "\t\t#10;\n";
 	test << "\t\tif (solution == first_num*second_num) begin\n";
-	test << "\t\t\t$display(\"Test Passed\");\n";
+	test << "\t\t\t$display(\"Test Passed\"); // test "<< number_of_test <<"\n";
 	test << "\t\tend else begin\n";
-	test << "\t\t\t$display(\"Test error\");\n";
+	test << "\t\t\t$display(\"Test error test " << number_of_test << "\");\n";
 	test << "\t\tend\n";
 }
 void createTest(ofstream &test, string first_num, string second_num, int number_of_test)
@@ -422,9 +422,9 @@ void createTest(ofstream &test, string first_num, string second_num, int number_
 	test << "\t\tsecond_num = "<< second_num <<";\n";
 	test << "\t\t#10;\n";
 	test << "\t\tif (solution == first_num*second_num) begin\n";
-	test << "\t\t\t$display(\"Test Passed\");\n";
+	test << "\t\t\t$display(\"Test Passed\"); // test " << number_of_test << "\n";
 	test << "\t\tend else begin\n";
-	test << "\t\t\t$display(\"Test error\");\n";
+	test << "\t\t\t$display(\"Test error test " << number_of_test << "\");\n";
 	test << "\t\tend\n";
 }
 
