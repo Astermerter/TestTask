@@ -35,6 +35,7 @@ void createTest(std::ofstream& test, string first_num, string second_num, int nu
 string randomNum(int digit); // возвращает случайное число размерности digit
 void createIteration(ofstream& main, int count, int digit); // создание одной дополнительной итерации рекурсии алгоритма карацубы
 int maxIteration(int digit); // определение максимальной итерации для выполнения алгоритма карацубы (больше чем на это количество итераций невозможно опуститься)
-bool validator(const string& num); // проверяет, является ли введенная пользователем строка числом
+bool validator(const string& num, int digit); // проверяет, является ли введенная пользователем строка числом
+void createSwitchMultiplication(ofstream& main, int number_of_iteration);
 
 #endif // !sub
