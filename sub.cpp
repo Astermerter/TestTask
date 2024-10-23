@@ -109,10 +109,10 @@ void solution::terminalInterface()
 		answer2 = "test.v";*/
 	int inp_digit;
 	do {
-		cout << "Input digit numbers (int >= 1)" << endl;
+		cout << "Input digit numbers (4000 >= int >= 1)" << endl;
 		cin >> inp_digit;
 		if (cin.fail()) { cout << "Invalid input. Please enter a valid integer." << endl; cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
-	} while (inp_digit < 1);
+	} while (inp_digit < 1 or inp_digit > 4000);
 	solution::setDigit(inp_digit);
 
 	int inp_quantity_of_tests;
